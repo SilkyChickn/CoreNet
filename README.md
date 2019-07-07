@@ -1,4 +1,6 @@
 # CoreNet
+[![version][version-img]](https://github.com/Suuirad/CoreNet)
+[![license][license-img]](LICENSE)
 
 CoreNet is a lightweighted neural network framework, to create a simple neural network.
 
@@ -37,3 +39,7 @@ while(true){
 
 Copyright (c) 2019, Suuirad<br>
 All rights reserved.
+
+<!-- Shiled links -->
+[version-img]: https://img.shields.io/badge/version-v.0.1.0-green.svg?style=flat-square
+[license-img]: https://img.shields.io/badge/license-BSD-blue.svg?style=flat-square
