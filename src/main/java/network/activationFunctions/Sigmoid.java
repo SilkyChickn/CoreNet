@@ -9,7 +9,7 @@ class Sigmoid extends ActivationFunction {
      */
     @Override
     public float activate(float x) {
-        return (float)(1.0d / (1.0d + Math.pow(Math.E, -1.0d * x)));
+        return (float)(1.0f / (1.0f + Math.pow(Math.E, -x)));
     }
 
     /**f(x) = sig(x)(1 - sig(x))

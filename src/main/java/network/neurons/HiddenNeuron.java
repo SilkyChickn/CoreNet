@@ -9,7 +9,7 @@ import java.util.List;
 public class HiddenNeuron extends Neuron {
 
     //Connections with other neurons
-    private List<Connection> inputConnections = new ArrayList<Connection>();
+    private List<Connection> inputConnections = new ArrayList<>();
 
     /**Creating hidden neuron and setting its activation function.
      * At the beginning this neuron will be non connected.
@@ -28,11 +28,11 @@ public class HiddenNeuron extends Neuron {
         inputConnections.add(connection);
     }
 
-    /**Recalculate value of this neuron and all previous ones and return.
+    /**Recalculate value of this neuron (all previous ones must be calculated before).
      * Sum of all incoming connections with the activation function and threshold if active
      */
     @Override
-    public float getValue() {
+    public void forwardPass() {
 
         //Activate sum
         float derivedInput = activationFunction.activate(getNetInput());
@@ -40,8 +40,6 @@ public class HiddenNeuron extends Neuron {
         //Apply threshold
         if(useThreshold) value = derivedInput >= threshold ? derivedInput : 0;
         else value = derivedInput;
-
-        return value;
     }
 
     /**Backpropagate the neuron with the output delta and all previous

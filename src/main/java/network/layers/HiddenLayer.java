@@ -3,7 +3,6 @@ package network.layers;
 import network.WeightGenerator;
 import network.connections.Connection;
 import network.neurons.HiddenNeuron;
-import network.neurons.InputNeuron;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,41 +10,7 @@ import java.util.List;
 public class HiddenLayer {
 
     //List of all neurons of this hidden layer
-    private List<HiddenNeuron> hiddenNeurons = new ArrayList<HiddenNeuron>();
-
-    /**Fully connecting this hidden layer with the input layer
-     *
-     * @param other Input layer to connect with
-     * @param generator Generator to generate weight values
-     */
-    public void fullyConnect(InputLayer other, WeightGenerator generator){
-
-        //Iterate through neurons
-        for(HiddenNeuron neuron: hiddenNeurons){
-            for(InputNeuron otherNeuron: other.getInputNeurons()){
-
-                //Create connection
-                new Connection(otherNeuron, neuron, generator.next());
-            }
-        }
-    }
-
-    /**Fully connecting this hidden layer with the output layer
-     *
-     * @param other Output layer to connect with
-     * @param generator Generator to generate weight values
-     */
-    public void fullyConnect(OutputLayer other, WeightGenerator generator){
-
-        //Iterate through neurons
-        for(HiddenNeuron neuron: hiddenNeurons){
-            for(HiddenNeuron otherNeuron: other.getOutputNeurons()){
-
-                //Create connection
-                new Connection(neuron, otherNeuron, generator.next());
-            }
-        }
-    }
+    private List<HiddenNeuron> hiddenNeurons = new ArrayList<>();
 
     /**Fully connecting this hidden layer with the other hidden layer.
      * This hidden layer will be before the other.
@@ -65,21 +30,23 @@ public class HiddenLayer {
         }
     }
 
-    /**Fully connecting this hidden layer with the other hidden layer.
-     * This hidden layer will be after the other.
-     *
-     * @param other Hidden layer to connect with
-     * @param generator Generator to generate weight values
+    /**Execute forward pass for all hidden neurons in this layer
      */
-    public void fullyConnectBefore(HiddenLayer other, WeightGenerator generator){
-
-        //Iterate through neurons
+    public void forwardPass(){
         for(HiddenNeuron neuron: hiddenNeurons){
-            for(HiddenNeuron otherNeuron: other.hiddenNeurons){
+            neuron.forwardPass();
+        }
+    }
 
-                //Create connection
-                new Connection(otherNeuron, neuron, generator.next());
-            }
+    /**Backpropagates this hidden layer by the learn effect epsilon.
+     *
+     * DeltaWik = E * Di * ak
+     *
+     * @param learnEffect How much to adjust the weights (0..1)
+     */
+    public void backpropagate(float learnEffect) {
+        for(HiddenNeuron neuron: hiddenNeurons){
+            neuron.backpropagateHidden(learnEffect);
         }
     }
 
@@ -93,7 +60,7 @@ public class HiddenLayer {
 
     /**@return List of all neurons of this hidden layer
      */
-    public List<HiddenNeuron> getHiddenNeurons() {
+    List<HiddenNeuron> getHiddenNeurons() {
         return hiddenNeurons;
     }
 }

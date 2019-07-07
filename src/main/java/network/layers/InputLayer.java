@@ -1,5 +1,6 @@
 package network.layers;
 
+import jdk.internal.util.xml.impl.Input;
 import network.CoreNetException;
 import network.WeightGenerator;
 import network.connections.Connection;
@@ -12,13 +13,7 @@ import java.util.List;
 public class InputLayer {
 
     //List of all neurons of this input layer
-    private List<InputNeuron> inputNeurons = new ArrayList<InputNeuron>();
-
-    /**@return List of all neurons of this input layer
-     */
-    List<InputNeuron> getInputNeurons() {
-        return inputNeurons;
-    }
+    private List<InputNeuron> inputNeurons = new ArrayList<>();
 
     /**Adding input neuron to this input layer.
      *
@@ -42,6 +37,14 @@ public class InputLayer {
                 //Create connection
                 new Connection(neuron, otherNeuron, generator.next());
             }
+        }
+    }
+
+    /**Execute forward pass for all input neurons
+     */
+    public void forwardPass(){
+        for(InputNeuron neuron: inputNeurons){
+            neuron.forwardPass();
         }
     }
 

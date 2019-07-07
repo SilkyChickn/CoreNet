@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class Neuron {
 
     //Outgoing connections of the neuron
-    protected List<Connection> outputConnections = new ArrayList<Connection>();
+    List<Connection> outputConnections = new ArrayList<>();
 
     //Activation function of this neuron
     ActivationFunction activationFunction;
@@ -37,9 +37,13 @@ public abstract class Neuron {
         outputConnections.add(connection);
     }
 
-    /**Returns the actual output value of this neuron.
-     *
-     * @return Current neurons value
+    /**Calc the actual output value of this neuron.
      */
-    public abstract float getValue();
+    public abstract void forwardPass();
+
+    /**@return Actual output value of this neuron.
+     */
+    public float getValue() {
+        return value;
+    }
 }

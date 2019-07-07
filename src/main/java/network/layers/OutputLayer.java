@@ -4,7 +4,6 @@ import network.CoreNetException;
 import network.WeightGenerator;
 import network.connections.Connection;
 import network.neurons.HiddenNeuron;
-import network.neurons.InputNeuron;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 public class OutputLayer {
 
     //List of all neurons of this output layer
-    private List<HiddenNeuron> outputNeurons = new ArrayList<HiddenNeuron>();
+    private List<HiddenNeuron> outputNeurons = new ArrayList<>();
 
     /**@return List of all neurons of this output layer
      */
@@ -28,6 +27,32 @@ public class OutputLayer {
         this.outputNeurons.add(neuron);
     }
 
+    /**Execute forward pass for all neurons in this layer
+     */
+    public void forwardPass(){
+        for(HiddenNeuron neuron: outputNeurons){
+            neuron.forwardPass();
+        }
+    }
+    /**Backpropagates this output layer by the learn effect epsilon.
+     *
+     * DeltaWik = E * Di * ak
+     *
+     * @param learnEffect How much to adjust the weights (0..1)
+     * @param shoulds Output should data trainings set
+     */
+    public void backpropagate(float learnEffect, float[] shoulds) throws CoreNetException {
+
+        //Check if trainings set matches
+        if(shoulds.length != outputNeurons.size())
+            throw new CoreNetException("Trainings set output data count doesnt match the output neuron count");
+
+        //Backpropagate output layer
+        for(int i = 0; i < shoulds.length; i++){
+            outputNeurons.get(i).backpropagateOutput(learnEffect, shoulds[i]);
+        }
+    }
+
     /**Fully connecting this output layer with the hidden layer
      *
      * @param hiddenLayer Hidden layer to connect with
@@ -38,23 +63,6 @@ public class OutputLayer {
         //Iterate through neurons
         for(HiddenNeuron neuron: outputNeurons){
             for(HiddenNeuron otherNeuron: hiddenLayer.getHiddenNeurons()){
-
-                //Create connection
-                new Connection(otherNeuron, neuron, generator.next());
-            }
-        }
-    }
-
-    /**Fully connecting this output layer with the input layer
-     *
-     * @param inputLayer Input layer to connect with
-     * @param generator Generator to generate weight values
-     */
-    public void fullyConnect(InputLayer inputLayer, WeightGenerator generator){
-
-        //Iterate through neurons
-        for(HiddenNeuron neuron: outputNeurons){
-            for(InputNeuron otherNeuron: inputLayer.getInputNeurons()){
 
                 //Create connection
                 new Connection(otherNeuron, neuron, generator.next());

@@ -22,7 +22,7 @@ public class NeuralNetwork {
     //private List<HiddenLayer> convulutionalLayers = new ArrayList<HiddenLayer>();
 
     //List of all hidden layers
-    private List<HiddenLayer> hiddenLayers = new ArrayList<HiddenLayer>();
+    private List<HiddenLayer> hiddenLayers = new ArrayList<>();
 
     //Weight generator to generate connection weights
     private WeightGenerator weightGenerator;
@@ -38,7 +38,7 @@ public class NeuralNetwork {
 
         //Create inputs
         for(int i = 0; i < inputs; i++)
-            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.sigmoid));
+            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.identity));
 
         //Create outputs
         for(int i = 0; i < outputs; i++)
@@ -57,7 +57,7 @@ public class NeuralNetwork {
 
         //create neurons
         for(int i = 0; i < neuronCount; i++)
-            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
+            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.identity));
     }
 
     /**Fully connecting the mesh
@@ -89,23 +89,23 @@ public class NeuralNetwork {
      * @param outputData Output should data trainings set
      */
     public void backpropagate(float learnEffect, float[] inputData, float[] outputData) throws CoreNetException{
-        inputLayer.setInputs(inputData);
+        inputLayer.setInputs(inputData); //Set input data
+        forwardPass(); //Forward pass input data
+        outputLayer.backpropagate(learnEffect, outputData); //Backpropagate output layer
 
-        //Check if trainings set matches
-        if(outputData.length != outputLayer.getOutputCount())
-            throw new CoreNetException("Trainings set output data count doesnt match the output neuron count");
-
-        //Backpropagate output layer
-        for(int i = 0; i < outputData.length; i++){
-            outputLayer.getOutputNeuron(i).backpropagateOutput(learnEffect, outputData[i]);
+        //Backpropagate hidden layers (backwards)
+        for(int i = hiddenLayers.size() -1; i >= 0; i--){
+            hiddenLayers.get(i).backpropagate(learnEffect);
         }
+    }
 
-        //Backpropagate hidden layers
-        for(HiddenLayer layer: hiddenLayers){
-            for(HiddenNeuron neuron: layer.getHiddenNeurons()){
-                neuron.backpropagateHidden(learnEffect);
-            }
-        }
+    /**Executes forward pass for the whole network with the setted input values.
+     * Outputed values of the neuron are only valid after this
+     */
+    public void forwardPass(){
+        inputLayer.forwardPass();
+        for(HiddenLayer layer: hiddenLayers) layer.forwardPass();
+        outputLayer.forwardPass();
     }
 
     /**@return Networks input layer

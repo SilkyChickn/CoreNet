@@ -25,10 +25,10 @@ public class InputNeuron extends Neuron {
         this.inputValue = val;
     }
 
-    /**@return Activated input value with threshold applied
+    /**Activated input value with threshold applied
      */
     @Override
-    public float getValue() {
+    public void forwardPass() {
 
         //Activate value
         float temp = activationFunction.activate(inputValue);
@@ -36,7 +36,5 @@ public class InputNeuron extends Neuron {
         //Apply threshold
         if(useThreshold) value = temp >= threshold ? temp : 0;
         else value = temp;
-
-        return value;
     }
 }
