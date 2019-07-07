@@ -38,7 +38,7 @@ public class NeuralNetwork {
 
         //Create inputs
         for(int i = 0; i < inputs; i++)
-            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.identity));
+            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.sigmoid));
 
         //Create outputs
         for(int i = 0; i < outputs; i++)
@@ -57,7 +57,7 @@ public class NeuralNetwork {
 
         //create neurons
         for(int i = 0; i < neuronCount; i++)
-            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.identity));
+            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
     }
 
     /**Fully connecting the mesh
@@ -85,6 +85,8 @@ public class NeuralNetwork {
      * DeltaWik = E * Di * ak
      *
      * @param learnEffect How much to adjust the weights (0..1)
+     * @param inputData Input data trainings set
+     * @param outputData Output should data trainings set
      */
     public void backpropagate(float learnEffect, float[] inputData, float[] outputData) throws CoreNetException{
         inputLayer.setInputs(inputData);
@@ -93,9 +95,16 @@ public class NeuralNetwork {
         if(outputData.length != outputLayer.getOutputCount())
             throw new CoreNetException("Trainings set output data count doesnt match the output neuron count");
 
-        //Backpropagate
+        //Backpropagate output layer
         for(int i = 0; i < outputData.length; i++){
-            outputLayer.getOutputNeuron(i).backpropagate(learnEffect, outputData[i]);
+            outputLayer.getOutputNeuron(i).backpropagateOutput(learnEffect, outputData[i]);
+        }
+
+        //Backpropagate hidden layers
+        for(HiddenLayer layer: hiddenLayers){
+            for(HiddenNeuron neuron: layer.getHiddenNeurons()){
+                neuron.backpropagateHidden(learnEffect);
+            }
         }
     }
 

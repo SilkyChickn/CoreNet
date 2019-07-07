@@ -11,6 +11,9 @@ public class Connection {
     //Current weight of this connection
     private float weight;
 
+    //Last adjustment of the weight done by addWeight
+    private float lastAdjustment = 0.0f;
+
     /**Creating new connection between two neurons
      *
      * @param in Neuron on the connection input side
@@ -23,6 +26,7 @@ public class Connection {
 
         //Adding connection to neurons
         out.addInputConnection(this);
+        in.addOutputConnection(this);
     }
 
     /**Adding float value to the weight
@@ -31,6 +35,21 @@ public class Connection {
      */
     public void addWeight(float weight){
         this.weight += weight;
+        this.lastAdjustment = weight;
+    }
+
+    /**@return Connections current weight
+     */
+    public float getWeight() {
+        return weight;
+    }
+
+    /**Getting the last adjustment, done by addWeight function
+     *
+     * @return Last weight adjustment
+     */
+    public float getLastAdjustment() {
+        return lastAdjustment;
     }
 
     /**Getting value of the input neuron. (Not Weighted!)

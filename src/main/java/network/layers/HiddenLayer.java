@@ -93,7 +93,7 @@ public class HiddenLayer {
 
     /**@return List of all neurons of this hidden layer
      */
-    List<HiddenNeuron> getHiddenNeurons() {
+    public List<HiddenNeuron> getHiddenNeurons() {
         return hiddenNeurons;
     }
 }
