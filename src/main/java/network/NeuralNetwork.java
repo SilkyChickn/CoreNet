@@ -38,11 +38,11 @@ public class NeuralNetwork {
 
         //Create inputs
         for(int i = 0; i < inputs; i++)
-            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.identity));
+            inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.sigmoid));
 
         //Create outputs
         for(int i = 0; i < outputs; i++)
-            outputLayer.addOutputNeuron(new HiddenNeuron(ActivationFunctions.identity));
+            outputLayer.addOutputNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
     }
 
     /**Adding new hidden layer at the end with specific neuron count
@@ -57,7 +57,7 @@ public class NeuralNetwork {
 
         //create neurons
         for(int i = 0; i < neuronCount; i++)
-            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.identity));
+            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
     }
 
     /**Fully connecting the mesh

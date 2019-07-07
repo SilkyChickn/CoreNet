@@ -9,10 +9,10 @@ import java.net.URISyntaxException;
 public class Main {
     public static void main(String[] args) throws CoreNetException, IOException, URISyntaxException {
 
-        WeightGenerator generator = new WeightGenerator(-1.0f, 1.0f);
+        WeightGenerator generator = new WeightGenerator(0.0f, 1.0f);
         NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10);
 
-        //testNetwork.addHiddenLayer(100);
+        testNetwork.addHiddenLayer(15);
         testNetwork.fullyConnect();
 
         MnistTrainer trainer = new MnistTrainer();
@@ -20,7 +20,7 @@ public class Main {
         System.out.println("Starting test...");
         trainer.test(testNetwork);
 
-        float learnEffect = 0.01f;
+        float learnEffect = 0.0005f;
         while(true){
             System.out.println("Start training...");
             trainer.train(testNetwork, learnEffect);

@@ -25,13 +25,10 @@ class MnistLoader {
 
         int readHeadData = 16;
         int readHeadLabel = 8;
-        while(readHeadData < imagesByte.length)
-        {
+        while(readHeadData < imagesByte.length) {
             int[][] data = new int[28][28];
-            for(int i = 0; i<28; i++)
-            {
-                for(int k = 0; k<28; k++)
-                {
+            for(int i = 0; i<28; i++) {
+                for(int k = 0; k<28; k++) {
                     data[i][k] = toUnsignedByte(imagesByte[readHeadData++]);
                 }
             }
