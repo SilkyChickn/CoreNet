@@ -7,27 +7,37 @@ CoreNet is a lightweighted neural network framework, to create a simple neural n
 ## Simple Network
 
 The following code creates a simple network and train it using the [MNIST](http://yann.lecun.com/exdb/mnist/) dataset.
-The example creates a network with 3 layers (input, 1 x hidden, output) and fully connecting the neurons. Then it test the network with the mnist data set and train it in an endless loop.
 
 ```java
-WeightGenerator generator = new WeightGenerator(-1.0f, 1.0f);
+//Generator to generate network initial weights
+//Here weights between 0 and 1 will be created
+WeightGenerator generator = new WeightGenerator(0.0f, 1.0f);
 
+//Create neural network with random weights from generator
+//Network has 784 input and 10 output neurons (MNIST)
 NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10);
-testNetwork.addHiddenLayer(100);
+
+//Fully connect the neurons (Single layer perceptron)
 testNetwork.fullyConnect();
 
+//Create MNIST Dataset trainer and start test before training
 MnistTrainer trainer = new MnistTrainer();
-
 System.out.println("Starting test...");
 trainer.test(testNetwork);
 
+//Train until the network reach a success rate of 88 percent
 float learnEffect = 0.01f;
-while(true){
-	System.out.println("Start training...");
-	trainer.train(testNetwork, learnEffect);
+while(trainer.train(testNetwork, learnEffect) < 0.88f){
 	learnEffect *= 0.9f;
 }
+
+//start graphical and interactive MNIST simulator
+trainer.simulate(testNetwork);
 ```
+
+After the training u can check the resulting network with the graphical mnist simulator.
+
+![Image could not be shown.][simulator]
 
 ## Links
 
@@ -43,3 +53,6 @@ All rights reserved.
 <!-- Shiled links -->
 [version-img]: https://img.shields.io/badge/version-v.0.1.0-green.svg?style=flat-square
 [license-img]: https://img.shields.io/badge/license-BSD-blue.svg?style=flat-square
+
+<!-- Images -->
+[simulator]: img/mnist_sim.PNG "CoreNet MNIST Simulator"

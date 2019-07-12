@@ -9,6 +9,10 @@ import java.util.List;
 
 public class MnistTrainer {
 
+    //Simulator frame dimension
+    private static final int SIM_WIDTH = 280;
+    private static final int SIM_HEIGHT = 280;
+
     //Should outputs
     private static final float[] out0 = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private static final float[] out1 = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -31,14 +35,27 @@ public class MnistTrainer {
     private List<MnistDigit> trainData;
     private List<MnistDigit> testData;
 
+    //Mnist simulator
+    private MnistSimulator simulator;
+
     /**Loading mnist data set from resources
      *
      * @throws URISyntaxException Error by parsing resource url
      * @throws IOException Error by loading Mnist data
      */
-    public MnistTrainer() throws IOException, URISyntaxException {
+    public MnistTrainer() throws IOException, URISyntaxException, CoreNetException {
         trainData = MnistLoader.loadData(TRAIN_IMAGES, TRAIN_LABELS);
         testData = MnistLoader.loadData(TEST_IMAGES, TEST_LABELS);
+        simulator = new MnistSimulator(this, SIM_WIDTH, SIM_HEIGHT);
+    }
+
+    /**Start interactive, graphical mnist simulation with network
+     *
+     * @param network Network to simulate
+     */
+    public void simulate(NeuralNetwork network) throws CoreNetException {
+        checkMatch(network);
+        simulator.simulate(network);
     }
 
     /**Step one training iteration.
@@ -88,14 +105,14 @@ public class MnistTrainer {
             network.forwardPass();
 
             //Is networks guess correct?
-            if(digit.getLabel() == getAnswer(network))correct++;
+            if(digit.getLabel() == getAnswer(network, false))correct++;
             else wrong++;
         }
 
         float error = 1.0f * wrong / testData.size();
         float success = 1.0f * correct / testData.size();
 
-        System.out.println("################## MNIST-Trainer ##################");
+        System.out.println("\n################## MNIST-Trainer ##################");
         System.out.println("Correct:" + correct + " Wrong:" + wrong);
         System.out.println("ErrorRate:" + error);
         System.out.println("SuccessRate:" + success);
@@ -121,16 +138,22 @@ public class MnistTrainer {
         return new float[10];
     }
 
-    private int getAnswer(NeuralNetwork network) throws CoreNetException{
+    int getAnswer(NeuralNetwork network, boolean printResults) throws CoreNetException{
         int best = 0;
         float bestVal = 0.0f;
+        if(printResults) System.out.println("\nProbabilities");
         for(int i = 0; i < 10; i++){
             float val = network.getOutputLayer().getOutputNeuron(i).getValue();
             if(val > bestVal){
                 bestVal = val;
                 best = i;
             }
+
+            if(printResults){
+                System.out.println(i + ": " + val);
+            }
         }
+        if(printResults) System.out.println("--------------");
         return best;
     }
 }
