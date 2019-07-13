@@ -1,6 +1,5 @@
 package network.layers;
 
-import jdk.internal.util.xml.impl.Input;
 import network.CoreNetException;
 import network.WeightGenerator;
 import network.connections.Connection;
