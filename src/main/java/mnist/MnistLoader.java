@@ -1,5 +1,7 @@
 package mnist;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,32 +12,14 @@ import java.util.*;
 class MnistLoader {
 
     static List<MnistDigit> loadData(String imagesFile, String labelsFile)
-            throws IOException, URISyntaxException {
+            throws IOException {
 
-        //Get uris
-        URI imagesUri = Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(imagesFile)).toURI();
-        URI labelsUri = Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(labelsFile)).toURI();
-
-        //Create filesystem
-        if("jar".equals(imagesUri.getScheme())){
-            for (FileSystemProvider provider: FileSystemProvider.installedProviders()) {
-                if (provider.getScheme().equalsIgnoreCase("jar")) {
-                    try {
-                        provider.getFileSystem(imagesUri);
-                    } catch (FileSystemNotFoundException e) {
-                        // in this case we need to initialize it first:
-                        provider.newFileSystem(imagesUri, Collections.emptyMap());
-                    }
-                }
-            }
-        }
-
-        //Get paths from file systems
-        Path imagesPath = Paths.get(imagesUri);
-        Path labelsPath = Paths.get(labelsUri);
-
-        byte[] imagesByte = Files.readAllBytes(imagesPath);
-        byte[] labelsByte = Files.readAllBytes(labelsPath);
+        byte[] imagesByte = IOUtils.toByteArray(
+                Objects.requireNonNull(
+                        MnistLoader.class.getClassLoader().getResourceAsStream(imagesFile)));
+        byte[] labelsByte = IOUtils.toByteArray(
+                Objects.requireNonNull(
+                        MnistLoader.class.getClassLoader().getResourceAsStream(labelsFile)));
 
         List<MnistDigit> digits = new ArrayList<>();
 

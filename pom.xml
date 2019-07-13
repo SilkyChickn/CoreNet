@@ -29,4 +29,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+
+        <!-- Apache IO Utils -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+    </dependencies>
 </project>
