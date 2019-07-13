@@ -1,22 +1,38 @@
 package mnist;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.nio.file.*;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.*;
 
 class MnistLoader {
 
     static List<MnistDigit> loadData(String imagesFile, String labelsFile)
             throws IOException, URISyntaxException {
-        Path imagesPath = Paths.get(
-                Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(imagesFile)).toURI());
-        Path labelsPath = Paths.get(
-                Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(labelsFile)).toURI());
+
+        //Get uris
+        URI imagesUri = Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(imagesFile)).toURI();
+        URI labelsUri = Objects.requireNonNull(MnistLoader.class.getClassLoader().getResource(labelsFile)).toURI();
+
+        //Create filesystem
+        if("jar".equals(imagesUri.getScheme())){
+            for (FileSystemProvider provider: FileSystemProvider.installedProviders()) {
+                if (provider.getScheme().equalsIgnoreCase("jar")) {
+                    try {
+                        provider.getFileSystem(imagesUri);
+                    } catch (FileSystemNotFoundException e) {
+                        // in this case we need to initialize it first:
+                        provider.newFileSystem(imagesUri, Collections.emptyMap());
+                    }
+                }
+            }
+        }
+
+        //Get paths from file systems
+        Path imagesPath = Paths.get(imagesUri);
+        Path labelsPath = Paths.get(labelsUri);
 
         byte[] imagesByte = Files.readAllBytes(imagesPath);
         byte[] labelsByte = Files.readAllBytes(labelsPath);
