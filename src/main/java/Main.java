@@ -25,7 +25,7 @@ public class Main {
 
         //Train until the network reach a success rate of 88 percent
         float learnEffect = 0.01f;
-        while(trainer.train(testNetwork, learnEffect) < 0.95f){
+        while(trainer.train(testNetwork, learnEffect) < 0.9f){
             learnEffect *= 0.9f;
         }
 

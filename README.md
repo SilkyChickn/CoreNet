@@ -14,11 +14,8 @@ The following code creates a simple network and train it using the [MNIST](http:
 WeightGenerator generator = new WeightGenerator(0.0f, 1.0f);
 
 //Create neural network with random weights from generator
-//Network has 784 input and 10 output neurons (MNIST)
-NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10);
-
-//Fully connect the neurons (Single layer perceptron)
-testNetwork.fullyConnect();
+//Network has 784 input neurons, 10 output neurons (MNIST) and no hidden layers
+NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10, 0);
 
 //Create MNIST Dataset trainer and start test before training
 MnistTrainer trainer = new MnistTrainer();
@@ -27,7 +24,7 @@ trainer.test(testNetwork);
 
 //Train until the network reach a success rate of 88 percent
 float learnEffect = 0.01f;
-while(trainer.train(testNetwork, learnEffect) < 0.88f){
+while(trainer.train(testNetwork, learnEffect) < 0.9f){
 	learnEffect *= 0.9f;
 }
 
