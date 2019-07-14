@@ -14,6 +14,9 @@ public class Connection {
     //Current weight of this connection
     private float weight;
 
+    //Momentum term
+    private float momentum = 0.0f;
+
     /**Creating new connection between two neurons
      *
      * @param in Neuron on the connection input side
@@ -35,7 +38,13 @@ public class Connection {
      * @param weight Value to add to weight
      */
     public void addWeight(float weight){
-        this.weight += weight;
+
+        //Calc momentum
+        momentum += weight;
+        momentum *= 0.9f;
+
+        //Change weight
+        this.weight += weight + momentum;
     }
 
     /**@return Neuron on the output side

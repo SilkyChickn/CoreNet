@@ -1,8 +1,5 @@
 - Fix multilayered backpropagation
 - Bias
-- Auto connecting
-- Mutations
-- Reinforced Q-Learning
 - Plots for variouse graphs/statistics
 - Serialization
 - Convolutional Layers

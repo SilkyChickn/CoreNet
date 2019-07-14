@@ -22,16 +22,27 @@ public class InputLayer {
         this.inputNeurons.add(neuron);
     }
 
-    /**Fully connecting this input layer with the hidden layer
+    /**Connecting neuron with all neurons of this layer, after this layer
      *
-     * @param hiddenLayer Hidden layer to connect with
+     * @param neuron Neuron to connect
+     * @param weightGenerator Generator to generate weight
+     */
+    public void connectNeuronAfter(HiddenNeuron neuron, WeightGenerator weightGenerator){
+        for(InputNeuron in: inputNeurons){
+            new Connection(in, neuron, weightGenerator.next());
+        }
+    }
+
+    /**Fully connecting this input layer with the output layer
+     *
+     * @param outputLayer Output layer to connect with
      * @param generator Generator to generate weight values
      */
-    public void fullyConnect(HiddenLayer hiddenLayer, WeightGenerator generator){
+    public void fullyConnectOutputLayer(OutputLayer outputLayer, WeightGenerator generator){
 
         //Iterate through neurons
         for(InputNeuron neuron: inputNeurons){
-            for(HiddenNeuron otherNeuron: hiddenLayer.getHiddenNeurons()){
+            for(HiddenNeuron otherNeuron: outputLayer.getOutputNeurons()){
 
                 //Create connection
                 new Connection(neuron, otherNeuron, generator.next());
@@ -44,23 +55,6 @@ public class InputLayer {
     public void forwardPass(){
         for(InputNeuron neuron: inputNeurons){
             neuron.forwardPass();
-        }
-    }
-
-    /**Fully connecting this input layer with the output layer
-     *
-     * @param outputLayer Output layer to connect with
-     * @param generator Generator to generate weight values
-     */
-    public void fullyConnect(OutputLayer outputLayer, WeightGenerator generator){
-
-        //Iterate through neurons
-        for(InputNeuron neuron: inputNeurons){
-            for(HiddenNeuron otherNeuron: outputLayer.getOutputNeurons()){
-
-                //Create connection
-                new Connection(neuron, otherNeuron, generator.next());
-            }
         }
     }
 

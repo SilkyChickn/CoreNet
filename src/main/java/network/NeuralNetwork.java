@@ -1,5 +1,6 @@
 package network;
 
+import network.activationFunctions.ActivationFunction;
 import network.activationFunctions.ActivationFunctions;
 import network.layers.HiddenLayer;
 import network.layers.InputLayer;
@@ -33,51 +34,61 @@ public class NeuralNetwork {
      * @param inputs Input neuron count
      * @param outputs Output neuron count
      */
-    public NeuralNetwork(WeightGenerator weightGenerator, int inputs, int outputs){
+    public NeuralNetwork(WeightGenerator weightGenerator, int inputs, int outputs, int hiddenLayers){
         this.weightGenerator = weightGenerator;
 
         //Create inputs
         for(int i = 0; i < inputs; i++)
             inputLayer.addInputNeuron(new InputNeuron(ActivationFunctions.sigmoid));
 
+        //Create hidden layers
+        for(int i = 0; i < hiddenLayers; i++)
+            this.hiddenLayers.add(new HiddenLayer());
+
         //Create outputs
         for(int i = 0; i < outputs; i++)
             outputLayer.addOutputNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
+
+        //Single layer perceptron
+        if(hiddenLayers == 0) inputLayer.fullyConnectOutputLayer(outputLayer, weightGenerator);
     }
 
-    /**Adding new hidden layer at the end with specific neuron count
+    /**Mutating new neurons in a specific hidden layer and connecting them with the mesh
      *
-     * @param neuronCount Neurons in the new hidden layer
+     * @param layer Hidden layer to mutate neurons in
+     * @throws CoreNetException Hidden layer does not exist
      */
-    public void addHiddenLayer(int neuronCount){
+    public void mutateHiddenNeurons(int layer, int count) throws CoreNetException {
+        if(layer < 0 || layer > hiddenLayers.size() -1)
+            throw new CoreNetException("Hidden layer does not exist");
 
-        //Create hidden layer
-        HiddenLayer newLayer = new HiddenLayer();
-        hiddenLayers.add(newLayer);
-
-        //create neurons
-        for(int i = 0; i < neuronCount; i++)
-            newLayer.addHiddenNeuron(new HiddenNeuron(ActivationFunctions.sigmoid));
+        //Add neurons
+        for(int i = 0; i < count; i++){
+            mutateHiddenNeuron(layer, ActivationFunctions.sigmoid);
+        }
     }
 
-    /**Fully connecting the mesh
+    /**Mutating new neuron in a specific hidden layer and connecting with the mesh
+     *
+     * @param layer Hidden layer to mutate neuron in
+     * @param activationFunction Activation function of the neuron
+     * @throws CoreNetException Hidden layer does not exist
      */
-    public void fullyConnect() {
+    public void mutateHiddenNeuron(int layer, ActivationFunction activationFunction) throws CoreNetException {
+        if(layer < 0 || layer > hiddenLayers.size() -1)
+            throw new CoreNetException("Hidden layer does not exist");
 
-        //No hidden layers exist
-        if(hiddenLayers.size() == 0) {
-            inputLayer.fullyConnect(outputLayer, weightGenerator);
-        }else{
+        //Add neuron
+        HiddenNeuron neuron = new HiddenNeuron(activationFunction);
+        hiddenLayers.get(layer).addHiddenNeuron(neuron);
 
-            //Connect hidden layers from left to right
-            for(int i = 0; i < hiddenLayers.size() -1; i++){
-                hiddenLayers.get(i).fullyConnectAfter(hiddenLayers.get(i +1), weightGenerator);
-            }
+        //Connect neuron left
+        if(layer == 0) inputLayer.connectNeuronAfter(neuron, weightGenerator);
+        else hiddenLayers.get(layer -1).connectNeuronAfter(neuron, weightGenerator);
 
-            //Connect input and output layers
-            inputLayer.fullyConnect(hiddenLayers.get(0), weightGenerator);
-            outputLayer.fullyConnect(hiddenLayers.get(hiddenLayers.size() -1), weightGenerator);
-        }
+        //Connect neuron right
+        if(layer == hiddenLayers.size() -1) outputLayer.connectNeuronBefore(neuron, weightGenerator);
+        else hiddenLayers.get(layer +1).connectNeuronBefore(neuron, weightGenerator);
     }
 
     /**Backpropagates the network by the learn effect epsilon.
@@ -96,6 +107,36 @@ public class NeuralNetwork {
         //Backpropagate hidden layers (backwards)
         for(int i = hiddenLayers.size() -1; i >= 0; i--){
             hiddenLayers.get(i).backpropagate(learnEffect);
+        }
+    }
+
+    /**Evaluating the last forwarded output of the network.
+     * The network will try to improve by your evaluation.
+     *
+     * @param learnEffect Learn effect to use, how strong to remember decision
+     * @param evaluation Evaluation of the last forwardPass.
+     *                   Strong negative is bad, strong positive is good, zero is neutral
+     */
+    public void evaluate(float learnEffect, float evaluation){
+
+        //Calculate evaluation factor
+        float factor = learnEffect * evaluation;
+
+        try {
+
+            //Create learn set
+            float[] outs = new float[outputLayer.getOutputCount()];
+            for (int i = 0; i < outs.length; i++) {
+                outs[i] = outputLayer.getOutputNeuron(i).getValue();
+            }
+
+            //Evaluate
+            outputLayer.backpropagate(factor, outs);
+            for(int i = hiddenLayers.size() -1; i >= 0; i--){
+                hiddenLayers.get(i).backpropagate(factor);
+            }
+        }catch(CoreNetException ex){
+            ex.printStackTrace();
         }
     }
 

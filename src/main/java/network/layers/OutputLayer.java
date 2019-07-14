@@ -53,20 +53,14 @@ public class OutputLayer {
         }
     }
 
-    /**Fully connecting this output layer with the hidden layer
+    /**Connecting neuron with all neurons of this layer, before this layer
      *
-     * @param hiddenLayer Hidden layer to connect with
-     * @param generator Generator to generate weight values
+     * @param neuron Neuron to connect
+     * @param weightGenerator Generator to generate weight
      */
-    public void fullyConnect(HiddenLayer hiddenLayer, WeightGenerator generator){
-
-        //Iterate through neurons
-        for(HiddenNeuron neuron: outputNeurons){
-            for(HiddenNeuron otherNeuron: hiddenLayer.getHiddenNeurons()){
-
-                //Create connection
-                new Connection(otherNeuron, neuron, generator.next());
-            }
+    public void connectNeuronBefore(HiddenNeuron neuron, WeightGenerator weightGenerator){
+        for(HiddenNeuron hn: outputNeurons){
+            new Connection(neuron, hn, weightGenerator.next());
         }
     }
 

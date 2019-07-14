@@ -15,10 +15,8 @@ public class Main {
 
         //Create neural network with random weights from generator
         //Network has 784 input and 10 output neurons (MNIST)
-        NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10);
-
-        //Fully connect the neurons (Single layer perceptron)
-        testNetwork.fullyConnect();
+        NeuralNetwork testNetwork = new NeuralNetwork(generator, 784, 10, 0);
+        //testNetwork.mutateHiddenNeurons(0, 10);
 
         //Create MNIST Dataset trainer and start test before training
         MnistTrainer trainer = new MnistTrainer();
@@ -27,7 +25,7 @@ public class Main {
 
         //Train until the network reach a success rate of 88 percent
         float learnEffect = 0.01f;
-        while(trainer.train(testNetwork, learnEffect) < 0.89f){
+        while(trainer.train(testNetwork, learnEffect) < 0.95f){
             learnEffect *= 0.9f;
         }
 
